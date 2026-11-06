@@ -1,0 +1,2 @@
+# Runtime dependencies (pinned). Offline install: see docs/DEPLOYMENT.md
+pysoem==1.1.13
