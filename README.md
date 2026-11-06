@@ -31,13 +31,14 @@
 詳細安裝與搬移（含**沒有網路的電腦**）見 **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**。
 任何電腦上都可以先執行 **`tools\check_prerequisites.cmd`**：不連網、不修改設定，逐項列出缺少的元件與建議調整的網卡設定。
 
-## 快速開始（原始碼版）
+## 快速開始（開發環境，使用 [uv](https://docs.astral.sh/uv/)）
 
 ```powershell
-py -3.12 -m venv .venv
-.venv\Scripts\python -m pip install -r requirements.txt          # 離線：加 --no-index --find-links offline\wheels
-.venv\Scripts\python -m pysoem_tool
+uv sync                     # 依 uv.lock 建立 .venv（Python 3.12 + 所有開發套件）
+uv run python -m pysoem_tool
 ```
+
+現場電腦不需要 uv：用打包版，或用 pip 離線安裝，見 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)。
 
 1. 在上方下拉選單選擇接著 EtherCAT slave 的網卡，按 **連線**。完成後 slave 停在 **SAFE-OP**，cyclic 通訊開始。
 2. 底部狀態列燈號為「WKC OK」、`WKC x/x` 兩邊相等，代表每台 slave 都有回應。
@@ -48,10 +49,9 @@ py -3.12 -m venv .venv
 ## 測試
 
 ```powershell
-.venv\Scripts\python -m pip install -r requirements-dev.txt
-.venv\Scripts\python -m pytest -q                                 # 不需要硬體
-.venv\Scripts\python tools\check_view_rules.py pysoem_tool\screens --viewmodels pysoem_tool\viewmodels
-.venv\Scripts\python tools\snap_view.py pysoem_tool.screens.main_window --sizes 1280x800,1024x768
+uv run pytest -q                                                  # 不需要硬體
+uv run python tools\check_view_rules.py pysoem_tool\screens --viewmodels pysoem_tool\viewmodels
+uv run python tools\snap_view.py pysoem_tool.screens.main_window --sizes 1280x800,1024x768
 ```
 
 ## 文件
@@ -80,7 +80,8 @@ PySoemTool/
 ├── tools/                     check_prerequisites.(ps1|cmd)、check_view_rules.py、snap_view.py
 ├── docs/
 ├── launcher.py / PySoemTool.spec   PyInstaller 打包
-├── requirements.txt / requirements-dev.txt
+├── pyproject.toml / uv.lock       開發環境（uv）
+├── requirements.txt               現場 pip 離線安裝用，由 uv.lock 匯出
 └── LICENSE (GPLv3)
 ```
 

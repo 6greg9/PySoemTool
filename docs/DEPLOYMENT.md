@@ -38,14 +38,15 @@
 
 ## 3. 方式 A：PyInstaller 打包（建議）
 
-**在有網路的開發電腦上建置：**
+**在有網路的開發電腦上建置（開發環境使用 [uv](https://docs.astral.sh/uv/)，版本鎖定在 `uv.lock`）：**
 
 ```powershell
-py -3.12 -m venv .venv
-.venv\Scripts\python -m pip install -r requirements-dev.txt
-.venv\Scripts\python -m pytest -q
-.venv\Scripts\pyinstaller --noconfirm PySoemTool.spec
+uv sync --locked
+uv run pytest -q
+uv run pyinstaller --noconfirm PySoemTool.spec
 ```
+
+公司網路以自有憑證攔截 HTTPS 時，uv 會回報 `invalid peer certificate`，在 `uv sync` 加上 `--system-certs`。
 
 輸出在 `dist\PySoemTool\`：`PySoemTool.exe` 與 `_internal\`（Python runtime、pysoem 原生模組、Tcl/Tk、`design\tokens.json`）。
 `PySoemTool.spec` 的設計：
@@ -72,6 +73,12 @@ PySoemTool-offline/
 
 ## 4. 方式 B：Python + wheel 離線安裝
 
+目標電腦**不需要 uv**，只用 Python 內附的 pip。`requirements.txt` 由 `uv.lock` 匯出；更新相依套件後要重新匯出：
+
+```powershell
+uv export --no-dev --no-hashes --no-emit-project -o requirements.txt
+```
+
 **在有網路的電腦上準備：**
 
 ```powershell
@@ -79,8 +86,10 @@ PySoemTool-offline/
 py -3.12 -m pip download -d offline\wheels -r requirements.txt --only-binary=:all: --python-version 3.12 --platform win_amd64
 ```
 
+公司網路以自有憑證攔截 HTTPS 時，pip 會回報 `CERTIFICATE_VERIFY_FAILED`；舊版 pip 在上面的指令加上 `--use-feature=truststore`。
+
 另外下載 `python-3.12.x-amd64.exe`（python.org，Windows installer 64-bit）。
-需要在現場跑測試時，再把 `requirements-dev.txt` 也下載進 `offline\wheels`。
+現場不跑測試：`requirements.txt` 只含執行期相依，測試在開發電腦上用 `uv run pytest` 執行。
 
 **在目標電腦上：**
 

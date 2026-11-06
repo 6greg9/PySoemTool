@@ -1,0 +1,20 @@
+[project]
+name = "pysoem-tool"
+version = "0.1.0"
+description = "EtherCAT test tool for Windows: Python + pysoem + tkinter"
+readme = "README.md"
+license = "GPL-3.0-only"
+requires-python = ">=3.12,<3.13"
+dependencies = ["pysoem==1.1.13"]
+
+[dependency-groups]
+dev = ["pytest==9.2.0", "pillow==13.0.0", "pyinstaller"]
+
+[tool.uv]
+# An application run from its source folder, not an installable package.
+package = false
+# pysoem is only deployed as win_amd64 here; keep the lock to that platform.
+environments = ["sys_platform == 'win32'"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,5 +1,5 @@
 # PyInstaller spec: onedir build (dist\PySoemTool\PySoemTool.exe + _internal\).
-# Build:  .venv\Scripts\pyinstaller --noconfirm PySoemTool.spec
+# Build:  uv run pyinstaller --noconfirm PySoemTool.spec
 # Npcap is NOT bundled (licence); the app adds System32\Npcap to the DLL path at startup.
 from pathlib import Path
 
